@@ -1,0 +1,4 @@
+# build dir
+cmake-build-debug
+# macos
+.DS_Store
