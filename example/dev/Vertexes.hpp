@@ -7,7 +7,7 @@
 
 #include <vector>
 
-std::vector<float>vertices1 = {
+std::vector<float> vertices1 = {
     -0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
     0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
     0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,

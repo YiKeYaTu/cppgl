@@ -11,14 +11,16 @@
 class StructuredRenderUnit: public Buildable {
 private:
     std::vector<std::shared_ptr<StructuredRenderUnit>> _children;
-    std::shared_ptr<RenderUnit> _renderUnit;
+    std::vector<std::shared_ptr<RenderUnit>> _renderUnits;
 
     void _traverse(StructuredRenderUnit* structuredRenderUnit, std::function<void (std::shared_ptr<RenderUnit>)> callback) {
         if (!structuredRenderUnit) {
             return;
         }
 
-        callback(_renderUnit);
+        for (const auto& renderUnit : structuredRenderUnit->_renderUnits) {
+            callback(renderUnit);
+        }
 
         for (const auto& child : structuredRenderUnit->_children) {
             _traverse(child.get(), callback);
@@ -31,6 +33,11 @@ private:
         });
     }
 public:
+    StructuredRenderUnit(
+        const std::vector<std::shared_ptr<RenderUnit>>& renderUnits,
+        const std::vector<std::shared_ptr<StructuredRenderUnit>>& children
+    ): _children(children), _renderUnits(renderUnits) {}
+
     void draw(std::function<void (std::shared_ptr<RenderUnit> renderUnit)> callback) {
         _traverse(this, [&callback](std::shared_ptr<RenderUnit> renderUnit) {
             callback(renderUnit);

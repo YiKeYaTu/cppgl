@@ -15,13 +15,25 @@ private:
     unsigned int _height;
     glTexture2D::TextureFormat _textureFormat;
     unsigned long _textureParameter;
+    bool _mipmap;
 
-    unsigned int* _data;
+    std::shared_ptr<unsigned char> _data;
 
     void _build() override {
         _setHandle(glTexture2D::gen());
         glTexture2D::bind(_getHandle());
-        glTexture2D::asTexture(_width, _height, _textureFormat, _data);
+        glTexture2D::asTexture(_width, _height, _textureFormat, _data.get());
+
+        if (_mipmap) {
+            glTexture2D::genMipmap();
+        }
+
+        if (_width % 4 != 0 || _height % 4 != 0) {
+            glTexture2D::setUnpackAlignment(1);
+        } else {
+            glTexture2D::setUnpackAlignment(4);
+        }
+
         glTexture2D::setParameter(_textureParameter);
     }
 
@@ -39,9 +51,26 @@ public:
         unsigned int width,
         unsigned int height,
         glTexture2D::TextureFormat textureFormat,
-        unsigned int* data = nullptr,
-        unsigned long textureParameter = glTexture2D::TextureParameter::MIN_FILTER_LINEAR | glTexture2D::TextureParameter::MAG_FILTER_LINEAR
-    ) : _width(width), _height(height), _textureFormat(textureFormat), _data(data), _textureParameter(textureParameter) {}
+        unsigned char* data = nullptr,
+        unsigned long textureParameter = glTexture2D::TextureParameter::MIN_FILTER_LINEAR | glTexture2D::TextureParameter::MAG_FILTER_LINEAR,
+        bool mipmap = false
+    ) : Texture2D(
+        width
+        , height
+        , textureFormat
+        , std::shared_ptr<unsigned char>(data, memory::emptyDeleter<unsigned char>)
+        , textureParameter
+        , mipmap) {}
+
+    Texture2D(
+        unsigned int width,
+        unsigned int height,
+        glTexture2D::TextureFormat textureFormat,
+        std::shared_ptr<unsigned char> data = nullptr,
+        unsigned long textureParameter = glTexture2D::TextureParameter::MIN_FILTER_LINEAR | glTexture2D::TextureParameter::MAG_FILTER_LINEAR,
+        bool mipmap = false
+    ) : _width(width), _height(height), _textureFormat(textureFormat), _data(data), _textureParameter(textureParameter), _mipmap(mipmap) {}
+
 
     void use() override {
         requireBuilt()
@@ -53,27 +82,8 @@ public:
         _width = width;
         _height = height;
         use();
-        glTexture2D::asTexture(_width, _height, _textureFormat, _data);
+        glTexture2D::asTexture(_width, _height, _textureFormat, _data.get());
     }
-
-//    static Texture2D* createTexture2D(
-//        unsigned int width,
-//        unsigned int height,
-//        glTexture2D::TextureFormat textureFormat,
-//        unsigned long textureParameter = glTexture2D::TextureParameter::MIN_FILTER_LINEAR
-//            | glTexture2D::TextureParameter::MAG_FILTER_LINEAR
-//    ) {
-//        static std::unordered_map<unsigned int, Texture2D> textures;
-//        static unsigned int textureGid = 1;
-//
-//        textures.emplace(
-//            std::piecewise_construct,
-//            std::forward_as_tuple(textureGid),
-//            std::forward_as_tuple(width, height, textureFormat, textureParameter)
-//        );
-//
-//        return &textures.at(textureGid ++);
-//    }
 };
 
 #endif //CPPGL_TEXTURE2D_HPP

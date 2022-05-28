@@ -51,8 +51,8 @@ public:
     void setTexture(unsigned int textureUnit, const std::string& name, Texture& texture) {
         use();
         glActiveTexture(GL_TEXTURE0 + textureUnit);
-        texture.use();
         glUniform1i(glGetUniformLocation(_handle, name.c_str()), textureUnit);
+        texture.use();
     }
 
     void setUniform(const std::string& name, const Mat4f& m) {

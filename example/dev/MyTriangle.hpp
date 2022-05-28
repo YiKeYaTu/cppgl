@@ -8,7 +8,7 @@
 #include <core/layout/Layout.hpp>
 
 Layout createTriangleLayout() {
-    Layout layout(10);
+    Layout layout;
 
     layout.add<float>(3);
     layout.add<float>(3);

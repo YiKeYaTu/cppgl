@@ -9,8 +9,8 @@
 
 class Sponza {
 public:
-    void load() {
-        StructuredRenderUnitLoader::load("../../assets/sponza/sponza.obj");
+    std::shared_ptr<StructuredRenderUnit> load() {
+        return StructuredRenderUnitLoader::load("../../assets/sponza/sponza.obj");
     }
 };
 

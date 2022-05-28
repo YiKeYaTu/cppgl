@@ -1,10 +1,8 @@
 #define CPPGL_DEBUG_MODE true
 
 #include <core/shader/ShaderProgram.hpp>
-#include <core/layout/Layout.hpp>
 #include <core/context/WindowContext.hpp>
 #include "core/render/renderUnit/TriangleRenderUnit.hpp"
-#include <core/buffer/VertexBufferObject.hpp>
 #include <core/buffer/RenderBufferObject.hpp>
 #include <core/render/ScreenPaint.hpp>
 #include <core/render/FramePaint.hpp>
@@ -12,17 +10,14 @@
 #include <core/gl/buffer/glRenderBuffer.hpp>
 #include <core/gl/configurer/glDepthTestConfigurer.hpp>
 #include <math/Quaternion.hpp>
+#include <util/Camera.hpp>
+#include <util/coordinate.hpp>
 
 #include "Sponza.hpp"
-#include "MyTriangle.hpp"
 #include "Vertexes.hpp"
 
-auto layout = createTriangleLayout();
-
 int main() {
-    Sponza sponza;
-    sponza.load();
-    return 0;
+    Camera camera = Camera(Vec3f{ 0, 1, 3 }, Vec3f{ 0, 1, 0 }, Vec3f{ 0, 1, 0 });
 
     float theta1 = -360.0 / 180 * M_PI;
     float theta2 = 20.0 / 180 * M_PI;
@@ -39,16 +34,20 @@ int main() {
         Quaternion(theta3, n3),
     };
 
-    unsigned int width = 1000, height = 800;
+    unsigned int width = 2000, height = 1600;
 
-    TriangleRenderUnit myCube = TriangleRenderUnit(&layout, &vertices1);
+//    TriangleRenderUnit myCube = TriangleRenderUnit(&layout, &vertices1);
 
     WindowContext windowContext = WindowContext(width, height, "TEST");
     windowContext.build();
     windowContext.use();
 
-    Texture2D color1 = Texture2D(width, height, glTexture2D::TextureFormat::RGBA8);
-    Texture2D color2 = Texture2D(width, height, glTexture2D::TextureFormat::RGBA8);
+    Sponza sponza;
+    std::shared_ptr<StructuredRenderUnit> structuredRenderUnit = sponza.load();
+    structuredRenderUnit->build();
+
+    Texture2D color1 = Texture2D(width, height, glTexture2D::TextureFormat::RGBA8, nullptr);
+    Texture2D color2 = Texture2D(width, height, glTexture2D::TextureFormat::RGBA8, nullptr);
     RenderBufferObject depthRenderBufferObject = RenderBufferObject(width, height, glRenderBuffer::RenderBufferFormat::D24S8);
 
     ScreenPaint& screenPaint = ScreenPaint::getScreenPaint();
@@ -66,9 +65,28 @@ int main() {
     quadShader.build();
 
     float elapsed = 0.0;
+    auto [ x, y ] = windowContext.getMousePos();
 
     while (!windowContext.shouldClose()) {
         auto [ curWidth, curHeight ] = windowContext.getViewportSize();
+        auto [ xpos, ypos ] = windowContext.getMousePos();
+
+        if (windowContext.getPressedKey() == GLFW_KEY_W) {
+            camera.moveForward(0.1f);
+        } else if (windowContext.getPressedKey() == GLFW_KEY_S) {
+            camera.moveForward(-0.1f);
+        }
+
+        if (windowContext.getPressedKey() == GLFW_KEY_D) {
+            camera.moveRight(0.1);
+        } else if (windowContext.getPressedKey() == GLFW_KEY_A) {
+            camera.moveRight(-0.1);
+        }
+
+        camera.moveTargetAroundSphere((xpos - x) * 1e-3, (ypos - y) * 1e-3);
+
+        x = xpos;
+        y = ypos;
 
         if (curWidth != width || curHeight != height) {
             width = curWidth;
@@ -84,19 +102,21 @@ int main() {
             glDepthTestConfigurer::DepthFunc::LEQUAL
         );
 
-        if (elapsed <= 1.0f && idx + 1 < quaternions.size()) {
-//            commonShader.setUniform("model", quaternions[idx].slerpFaster(quaternions[idx + 1], elapsed).asRotationMatrix());
-            commonShader.setUniform("model", quaternions[idx].slerp(quaternions[idx + 1], elapsed).asRotationMatrix());
-            elapsed += 0.005;
-        } else {
-            idx ++;
-            elapsed = 0.0f;
-        }
+//        if (elapsed <= 1.0f && idx + 1 < quaternions.size()) {
+//            commonShader.setUniform("model", quaternions[idx].slerp(quaternions[idx + 1], elapsed).asRotationMatrix());
+//            elapsed += 0.005;
+//        } else {
+//            idx ++;
+//            elapsed = 0.0f;
+//        }
 
-        commonShader.setUniform("view", Mat4f::LookAt( Vec3f{ 0, 5, -10 }, Vec3f{ 0, 0, 0 }, Vec3f{ 0, 1, 0 } ));
-        commonShader.setUniform("proj", Mat4f::Perspective(0.01, 200, 45.0 / 180 * M_PI, static_cast<float>(width) / height));
+        commonShader.setUniform("model", Mat4f::Identity());
+        commonShader.setUniform("view", camera.asViewMatrix());
+        commonShader.setUniform("proj", Mat4f::Perspective(0.01, 2000, 45.0 / 180 * M_PI, static_cast<float>(width) / height));
 
-        screenPaint.draw(myCube, commonShader);
+        structuredRenderUnit->draw([&commonShader](const std::shared_ptr<RenderUnit>& renderUnit) {
+            renderUnit->draw(commonShader);
+        });
 
         windowContext.swapBuffers();
         windowContext.pollEvents();

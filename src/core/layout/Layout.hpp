@@ -70,6 +70,7 @@ class Layout: public Printable, public Buildable {
 private:
     std::vector<LayoutItem> _layoutItems;
     GLsizei _stride = 0;
+    GLsizei _numItems = 0;
 
     void _build() override {
         for (auto& layoutItem : _layoutItems) {
@@ -88,6 +89,11 @@ public:
         GLenum gt = Type2GLenum<T>::value;
         _layoutItems.emplace_back(_layoutItems.size(), size, gt, normalized, -1, offset);
         _stride += size * sizeof(T);
+        _numItems += size;
+    }
+
+    unsigned int getNumItems() const {
+        return _numItems;
     }
 
     std::string asString() const override {

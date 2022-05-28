@@ -114,9 +114,9 @@ public:
     Vec3(T x, T y, T z): Vec<3, T> { x, y, z } {}
     Vec3 crossProduct(const Vec3& rhs) const {
         return Vec3{
-                y() * rhs.z() - z() * rhs.y(),
-                z() * rhs.x() - x() * rhs.z(),
-                x() * rhs.y() - y() * rhs.x()
+            y() * rhs.z() - z() * rhs.y(),
+            z() * rhs.x() - x() * rhs.z(),
+            x() * rhs.y() - y() * rhs.x()
         };
     }
     T x() const { return (*this)[0]; }

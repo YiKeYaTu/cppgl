@@ -18,12 +18,28 @@ private:
     static int _viewportWidth;
     static int _viewportHeight;
 
-    static void framebufferSizeCallback(GLFWwindow* window, int width, int height) {
+    static float _xpos;
+    static float _ypos;
+
+    static int _pressedKey;
+
+    static void _framebufferSizeCallback(GLFWwindow* window, int width, int height) {
         _viewportWidth = width;
         _viewportHeight = height;
         glViewport(0, 0, width, height);
     }
-    static void mouseCallback(GLFWwindow* window, double xpos, double ypos);
+    static void _mouseCallback(GLFWwindow* window, double xpos, double ypos) {
+        _xpos = xpos;
+        _ypos = ypos;
+    }
+
+    static void _keyboardCallback(GLFWwindow* window, int key, int scancode, int action, int mods) {
+        if (action == GLFW_PRESS) {
+            _pressedKey = key;
+        } else if (action == GLFW_RELEASE) {
+            _pressedKey = -1;
+        }
+    }
 
     GLFWwindow* _windowInstance;
     WindowContextInfo _windowContextInfo;
@@ -50,7 +66,10 @@ private:
             throw std::runtime_error("Failed to initialize GLAD");
         }
 
-        glfwSetFramebufferSizeCallback(_windowInstance, framebufferSizeCallback);
+        glfwSetInputMode(_windowInstance, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+        glfwSetCursorPosCallback(_windowInstance, _mouseCallback);
+        glfwSetFramebufferSizeCallback(_windowInstance, _framebufferSizeCallback);
+        glfwSetKeyCallback(_windowInstance, _keyboardCallback);
     }
 
 public:
@@ -70,8 +89,16 @@ public:
         glfwMakeContextCurrent(_windowInstance);
     }
 
-    std::tuple<unsigned int, unsigned int> getViewportSize() {
+    std::tuple<unsigned int, unsigned int> getViewportSize() const {
         return { _viewportWidth, _viewportHeight };
+    }
+
+    std::tuple<float, float> getMousePos() const {
+        return { _xpos, _ypos };
+    }
+
+    int getPressedKey() const {
+        return _pressedKey;
     }
 
     bool shouldClose() {
@@ -89,5 +116,10 @@ public:
 
 int WindowContext::_viewportWidth = 0;
 int WindowContext::_viewportHeight = 0;
+
+float WindowContext::_xpos = 0;
+float WindowContext::_ypos = 0;
+
+int WindowContext::_pressedKey = 0;
 
 #endif //CPPGL_WINDOWCONTEXT_HPP
