@@ -6,8 +6,8 @@
 #define CPPGL_WINDOWCONTEXTINFO_HPP
 
 #include <string>
-#include <core/state/KeyboardState.hpp>
-#include <core/state/MouseState.hpp>
+#include <core/context/state/KeyboardState.hpp>
+#include <core/context/state/MouseState.hpp>
 
 struct WindowContextInfo {
     unsigned int windowWidth;

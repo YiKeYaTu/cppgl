@@ -64,21 +64,23 @@ int main() {
     quadShader.build();
 
     float elapsed = 0.0;
-    auto [ x, y ] = windowContext.getMousePos();
+    auto& initWindowState = windowContext.updateState();
+    double x = initWindowState.mouseState.x, y = initWindowState.mouseState.y;
 
     while (!windowContext.shouldClose()) {
-        auto [ curWidth, curHeight ] = windowContext.getViewportSize();
-        auto [ xpos, ypos ] = windowContext.getMousePos();
+        const WindowState& windowState = windowContext.updateState();
+        const KeyboardState& keyboardState = windowState.keyboardState;
+        double xpos = windowState.mouseState.x, ypos = windowState.mouseState.y;
 
-        if (windowContext.getPressedKey() == GLFW_KEY_W) {
+        if (keyboardState.isKeyPressed(Keyboard::W)) {
             camera.moveForward(0.1f);
-        } else if (windowContext.getPressedKey() == GLFW_KEY_S) {
+        } else if (keyboardState.isKeyPressed(Keyboard::S)) {
             camera.moveForward(-0.1f);
         }
 
-        if (windowContext.getPressedKey() == GLFW_KEY_D) {
+        if (keyboardState.isKeyPressed(Keyboard::D)) {
             camera.moveRight(0.1);
-        } else if (windowContext.getPressedKey() == GLFW_KEY_A) {
+        } else if (keyboardState.isKeyPressed(Keyboard::A)) {
             camera.moveRight(-0.1);
         }
 
@@ -86,13 +88,6 @@ int main() {
 
         x = xpos;
         y = ypos;
-
-        if (curWidth != width || curHeight != height) {
-            width = curWidth;
-            height = curHeight;
-            paint1.getColorTexture(0).resize(width, height);
-            paint1.getColorTexture(1).resize(width, height);
-        }
 
         screenPaint.use();
         screenPaint.clear(Vec4f { 0.4, 0.4, 0.4, 1.0 });
