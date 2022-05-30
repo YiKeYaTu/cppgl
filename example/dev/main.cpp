@@ -2,7 +2,7 @@
 
 #include <core/shader/ShaderProgram.hpp>
 #include <core/context/WindowContext.hpp>
-#include "core/render/renderUnit/TriangleRenderUnit.hpp"
+#include <core/render/renderUnit/TriangleRenderUnit.hpp>
 #include <core/buffer/RenderBufferObject.hpp>
 #include <core/render/ScreenPaint.hpp>
 #include <core/render/FramePaint.hpp>
@@ -11,7 +11,6 @@
 #include <core/gl/configurer/glDepthTestConfigurer.hpp>
 #include <math/Quaternion.hpp>
 #include <util/Camera.hpp>
-#include <util/coordinate.hpp>
 
 #include "Sponza.hpp"
 #include "Vertexes.hpp"

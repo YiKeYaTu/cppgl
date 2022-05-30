@@ -8,4 +8,5 @@ include_directories( 3rdparty/glad/include )
 include_directories( 3rdparty/stb_image )
 
 add_subdirectory( 3rdparty )
+add_subdirectory( src )
 add_subdirectory( example )

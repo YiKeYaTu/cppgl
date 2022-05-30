@@ -28,12 +28,6 @@ private:
             glTexture2D::genMipmap();
         }
 
-        if (_width % 4 != 0 || _height % 4 != 0) {
-            glTexture2D::setUnpackAlignment(1);
-        } else {
-            glTexture2D::setUnpackAlignment(4);
-        }
-
         glTexture2D::setParameter(_textureParameter);
     }
 

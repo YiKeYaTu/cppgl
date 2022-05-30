@@ -82,6 +82,12 @@ namespace glTexture2D {
             default:
                 throw std::runtime_error("Incorrect format type of texture: " + std::to_string(textureFormat));
         }
+
+        if (width % 4 != 0 || height % 4 != 0) {
+            glTexture2D::setUnpackAlignment(1);
+        } else {
+            glTexture2D::setUnpackAlignment(4);
+        }
     }
 
     GLuint asColorAttachment(GLuint attachmentID, GLuint texture) {
