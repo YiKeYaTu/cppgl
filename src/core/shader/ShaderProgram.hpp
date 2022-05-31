@@ -59,6 +59,11 @@ public:
         use();
         glUniformMatrix4fv(glGetUniformLocation(_handle, name.c_str()), 1, GL_FALSE, m.data());
     }
+
+    void setUniform(const std::string& name, int value) {
+        use();
+        glUniform1i(glGetUniformLocation(_handle, name.c_str()), value);
+    }
 };
 
 #endif //CPPGL_SHADERPROGRAM_HPP

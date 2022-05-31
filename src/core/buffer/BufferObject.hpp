@@ -18,11 +18,11 @@ public:
     BufferObject() = default;
     virtual ~BufferObject() = default;
 
-    BufferObject(BufferObject&) = delete;
-    BufferObject& operator=(BufferObject&) = delete;
-
-    BufferObject(BufferObject&&) = delete;
-    BufferObject& operator=(BufferObject&&) = delete;
+//    BufferObject(BufferObject&) = delete;
+//    BufferObject& operator=(BufferObject&) = delete;
+//
+//    BufferObject(BufferObject&&) = delete;
+//    BufferObject& operator=(BufferObject&&) = delete;
 };
 
 #endif //CPPGL_BUFFEROBJECT_HPP

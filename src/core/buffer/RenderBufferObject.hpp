@@ -8,7 +8,6 @@
 #include <core/buffer/BufferObject.hpp>
 #include <core/gl/buffer/glRenderBuffer.hpp>
 
-class FramePaint;
 class FrameBufferObject;
 
 class RenderBufferObject: public BufferObject {

@@ -12,7 +12,7 @@
 #include <core/gl/macro.hpp>
 
 namespace glDraw {
-    void clear(const Vec4f& color, int f = GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT) {
+    void clear(const Vec4f& color, int f) {
         requireWindowContext()
         glClearColor(color.x(), color.y(), color.z(), color.w());
         glClear(f);

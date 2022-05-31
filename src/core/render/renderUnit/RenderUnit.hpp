@@ -27,6 +27,8 @@ protected:
     std::shared_ptr<std::vector<unsigned int>> _eboData;
     std::unordered_map<std::string, std::vector<std::shared_ptr<Texture>>> _textures;
 
+    unsigned int _numTextures = 0;
+
     VertexBufferObject _vbo;
     VertexArrayObject _vao;
     ElementBufferObject _ebo;
@@ -46,6 +48,7 @@ private:
 
         for (const auto& textures : _textures) {
             for (const auto& texture : textures.second) {
+                ++ _numTextures;
                 texture->build();
             }
         }
@@ -63,9 +66,21 @@ public:
         std::unordered_map<std::string, std::vector<std::shared_ptr<Texture>>> textures = std::unordered_map<std::string, std::vector<std::shared_ptr<Texture>>>()
     ): _layout(layout), _vboData(vboData), _eboData(eboData), _textures(textures) {}
 
+    RenderUnit(
+        Layout* layout,
+        std::vector<float>* vboData,
+        std::vector<unsigned int>* eboData = nullptr
+    ): _layout(layout)
+    , _vboData(std::shared_ptr<std::vector<float>>(vboData, memory::emptyDeleter<std::vector<float>>))
+    , _eboData(std::shared_ptr<std::vector<unsigned int>>(eboData, memory::emptyDeleter<std::vector<unsigned int>>)) {}
+
     void use() override {
         build();
         _vao.use();
+    }
+
+    unsigned int getNumTextures() const {
+        return _numTextures;
     }
 
     virtual void draw(ShaderProgram& shaderProgram) = 0;

@@ -9,13 +9,14 @@
 #include <core/gl/buffer/glFrameBuffer.hpp>
 #include <core/gl/texture/glTexture2D.hpp>
 #include <core/buffer/BufferObject.hpp>
+#include <core/buffer/RenderBufferObject.hpp>
 #include <core/texture/Texture.hpp>
+#include <core/gl/glDraw.hpp>
 
-class FramePaint;
+class Paint;
 
 class FrameBufferObject: public BufferObject {
-    friend FramePaint;
-
+    friend Paint;
 private:
     std::vector<Texture*> _colorTextures;
     std::vector<RenderBufferObject*> _renderBufferObjects;

@@ -9,17 +9,17 @@
 #include <core/xxable/Usable.hpp>
 
 class StructuredRenderUnit: public Buildable {
-private:
+public:
     std::vector<std::shared_ptr<StructuredRenderUnit>> _children;
     std::vector<std::shared_ptr<RenderUnit>> _renderUnits;
 
-    void _traverse(StructuredRenderUnit* structuredRenderUnit, std::function<void (std::shared_ptr<RenderUnit>)> callback) {
+    void _traverse(StructuredRenderUnit* structuredRenderUnit, std::function<void (RenderUnit*)> callback) {
         if (!structuredRenderUnit) {
             return;
         }
 
-        for (const auto& renderUnit : structuredRenderUnit->_renderUnits) {
-            callback(renderUnit);
+        for (std::shared_ptr<RenderUnit> renderUnit: structuredRenderUnit->_renderUnits) {
+            callback(renderUnit.get());
         }
 
         for (const auto& child : structuredRenderUnit->_children) {
@@ -28,7 +28,7 @@ private:
     }
 
     void _build() override {
-        _traverse(this, [](std::shared_ptr<RenderUnit> renderUnit) {
+        _traverse(this, [](RenderUnit* renderUnit) {
             renderUnit->build();
         });
     }
@@ -38,11 +38,12 @@ public:
         const std::vector<std::shared_ptr<StructuredRenderUnit>>& children
     ): _children(children), _renderUnits(renderUnits) {}
 
-    void draw(std::function<void (std::shared_ptr<RenderUnit> renderUnit)> callback) {
-        _traverse(this, [&callback](std::shared_ptr<RenderUnit> renderUnit) {
+    void draw(std::function<void (RenderUnit* renderUnit)> callback) {
+        _traverse(this, [&callback](RenderUnit* renderUnit) {
             callback(renderUnit);
         });
     }
+
 };
 
 #endif //CPPGL_StructuredRenderUnit_HPP

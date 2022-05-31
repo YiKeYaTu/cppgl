@@ -15,6 +15,7 @@ namespace glTexture2D {
         RGBA8 = GL_RGBA,
         RGB8 = GL_RGB,
         R8 = GL_RED,
+        R32
     };
 
     enum TextureParameter {
@@ -78,6 +79,9 @@ namespace glTexture2D {
             case TextureFormat::RGB8:
             case TextureFormat::RGBA8:
                 glTexImage2D(GL_TEXTURE_2D, 0, textureFormat, width, height, 0, textureFormat, GL_UNSIGNED_BYTE, data);
+                break;
+            case TextureFormat::R32:
+                glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, width, height, 0, GL_RED, GL_FLOAT, data);
                 break;
             default:
                 throw std::runtime_error("Incorrect format type of texture: " + std::to_string(textureFormat));
